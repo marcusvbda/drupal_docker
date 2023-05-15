@@ -1,0 +1,29 @@
+version: "3"
+services:
+  web:
+    container_name: drupal_app
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+  db:
+    container_name: drupal_db
+    restart: unless-stopped
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: ""
+    volumes:
+      - ./mysql/entrypoint:/docker-entrypoint-initdb.d
+networks:
+  web:
+    external: true
